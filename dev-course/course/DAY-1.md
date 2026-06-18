@@ -17,67 +17,61 @@ Today you'll set up your Claude Code environment, connect it to Jira (so the con
 
 ## Part 1: Environment Setup (~30 min)
 
-### Step 1: Install Claude Code
+### Step 1: Sign into Claude
 
-```bash
-npm install -g @anthropic-ai/claude-code
-```
+1. Go to claude.ai
+2. Sign in with your Claude Pro, Max, Team, or Enterprise account
+3. If you don't have an account, sign up for Claude Pro
 
-Then start it inside your project repo:
+### Step 2: Set up the Claude Code CLI
 
-```bash
-cd your-project
-claude
-```
+1. Install Claude Code:
 
-### Step 2: Authenticate
+   ```bash
+   npm install -g @anthropic-ai/claude-code
+   ```
 
-In the Claude Code session, run:
+2. Start it inside your project repo:
 
-```
-/login
-```
+   ```bash
+   cd your-project
+   claude
+   ```
 
-Sign in with your Claude Pro, Max, Team, or Enterprise account and complete the browser flow.
+3. Sign in by running `/login` in the session, then complete the browser flow with the same Claude account from Step 1.
 
 ### Step 3: Connect Jira via MCP
 
-This is how the contract (the PM's AC + the SDET's tests) reaches you without copy-paste. You'll register Atlassian's MCP server once, then log in through your browser. Follow these in order.
+This is how the contract (the PM's AC + the SDET's tests) reaches you without copy-paste — you register Atlassian's MCP server once, then log in through your browser.
 
-**3a — Register the Atlassian server.** If you're inside a Claude Code session, exit first (`Ctrl+C` twice, or type `exit`). Then, in your terminal, run this exactly:
+1. If you're inside a Claude Code session, exit first (`Ctrl+C` twice, or type `exit`). Then, in your terminal, register the Atlassian server:
 
-```bash
-claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/mcp/authv2
-```
+   ```bash
+   claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/mcp/authv2
+   ```
 
-➜ *What happens:* Claude Code saves the server and prints a confirmation like `Added HTTP MCP server "atlassian"`. Nothing is connected yet — you've just told Claude Code the server exists.
+   Claude Code confirms with `Added HTTP MCP server "atlassian"`. Nothing is connected yet — you've just told Claude Code the server exists.
 
-> This is Atlassian's current official endpoint. (You may see older guides use a `.../v1/sse` address with `--transport sse` — that one is being retired and should not be used; the `http` command above is the right one.)
+2. Start Claude Code again and open the MCP menu:
 
-**3b — Start Claude Code and open the MCP menu.** Launch it again and run the MCP command:
+   ```bash
+   claude
+   ```
+   ```
+   /mcp
+   ```
 
-```bash
-claude
-```
-```
-/mcp
-```
+   You'll see **atlassian** listed with a status like **"needs authentication."**
 
-➜ *What happens:* a menu lists your MCP servers. You'll see **atlassian** with a status like **"needs authentication"** or **"disconnected."**
+3. Select **atlassian**, then choose **Authenticate**. Your browser opens an Atlassian login page.
 
-**3c — Authenticate.** Select **atlassian**, then choose **Authenticate** (or **Login**).
+4. Log into your Atlassian account, pick your Jira site if asked, and click **Accept**. The page confirms and tells you to return to your terminal.
 
-➜ *What happens:* your default browser opens an Atlassian login / consent page.
+5. Back in Claude Code, run `/mcp` again. **atlassian** now shows as **connected ✓**.
 
-**3d — Approve access in the browser.** Log into your Atlassian account, pick the site (your Jira instance) if asked, and click **Accept**.
+> This is Atlassian's current official endpoint. You may see older guides use a `.../v1/sse` address with `--transport sse` — that one is being retired; the `http` command above is the right one.
 
-➜ *What happens:* the page tells you it's done and to return to your terminal.
-
-**3e — Confirm it connected.** Back in Claude Code, run `/mcp` again.
-
-➜ *What happens:* **atlassian** now shows as **connected ✓**.
-
-**What this enables:** Claude Code can now read and write Jira tickets *using your permissions* — it only sees what you can see. No elevated access.
+This lets Claude Code read and write Jira tickets *using your permissions* — it only sees what you can see. No elevated access.
 
 ### Step 4: Verify your connection
 
@@ -89,8 +83,8 @@ List the Jira projects I have access to
 
 If Claude returns your project list, you're good to go.
 
-- [ ] Claude Code installed and running in your repo
-- [ ] Authenticated via `/login`
+- [ ] Signed into Claude (Step 1)
+- [ ] Claude Code installed, running, and authenticated via `/login`
 - [ ] Atlassian MCP connected
 - [ ] `List the Jira projects I have access to` returns your projects
 
