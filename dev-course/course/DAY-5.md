@@ -1,9 +1,5 @@
 # Day 5: Rework + the CI Gate (Capstone — full end-to-end)
 
-> **Status: blueprint / outline.** Days 2–4 (Design, Build, Push) must exist first — this day assumes all
-> five agents are built and the board already auto-moves To Do → In Progress → In Review (see
-> `dev-sdlc-flow-01.md` §4). Flesh out the step-by-step once Days 2–4 are written.
-
 ## Overview
 
 Today is the capstone. You'll build the **last agent — Rework** — and then stand up the **CI gate**: a
@@ -20,15 +16,128 @@ deliberately broken build gets bounced back through Rework — all on its own.
 
 **Time estimate:** ~2.5 hours
 
+> **Where you are.** This is the capstone — it assumes Days 1–4 are done: all four agents (`receive-and-plan`, `design`, `build`, `push`) work, your carry-through worklog has sections `## 1` through `## 4`, the card is in **In Review** after a green push, and Jira MCP is connected. Today adds the fifth agent (Rework) and the independent gate that finally sets **Done**.
+
+The dev chain — you're at the final step:
+
+```
+Receive & Plan → Design → Build → Push → Rework
+                                          (today)
+```
+
 ---
 
 ## Part 1: Build the Rework agent (~45 min)
 
-*(Standard skill→agent build, same shape as Days 1–4. Rework is the only agent that both reads AND writes
-Jira: it pulls the gate's failure comment and, when stuck, posts a clarification.)*
+Same skill→agent shape as Days 1–4. Rework is the **cold loop**: when the independent gate fails a *pushed* build and posts the reason to Jira, Rework pulls that report, finds the root cause, re-greens the full suite, and hands back to Push. It's the only agent that both **reads and writes** Jira — it pulls the failure comment and, when the report is unclear, posts a dev-approved clarification.
 
-- Build the `rework` skill, then the `rework` agent.
-- Confirm its MCP tools are wired (pull comment, post comment, transition In Review → In Progress).
+### What this skill does
+
+A cold failure is one your local runs missed — it only surfaced in the gate's clean environment. Rework turns that into *"why + a patch"*: pull the gate's comment, reproduce, fix the **root cause** (not the symptom), green the whole suite, and hand back to Push — never editing the contract.
+
+### Step 1: Open the skill creator
+
+```
+/skill-creator
+```
+
+### Step 2: Paste this prompt (the skill)
+
+```
+Create a skill called "rework" — stage 5 of the Dev flow, the cold loop. The
+independent E2E gate failed a pushed build and posted the reason to Jira; this skill is
+the Dev's response. It pulls that report, finds the root cause, re-greens the full
+suite, and hands back to Push. It fixes; it does not judge — the gate already judged.
+
+The skill should:
+- Pull the latest gate failure comment from the ticket via the Jira MCP — the reason
+  and suggested fix.
+- Move the ticket back from "In Review" to "In Progress" via the Jira MCP, matched by
+  status NAME (never a hard-coded ID), so the board shows it's being reworked.
+- Read the worklog file `<TICKET-KEY>-worklog.md` first for the full history of what
+  Plan/Design/Build/Push already did.
+- Reproduce the failure locally, find the ROOT CAUSE (not the symptom), and decide the
+  fix.
+- Self-green like Build: apply the fix → run the FULL suite (npm test) → on any failure
+  fix the root cause + check blast radius → re-run, looping on yourself until the whole
+  suite is green. Never hand Push a red tree.
+- Append a "## 5 · Rework" section to the worklog with: the gate failure, the root
+  cause (not the symptom), the fix (files changed), and the full-suite result.
+- When the report is NOT actionable (vague, can't reproduce, or the fix breaks
+  something else): do NOT guess and do NOT push. Draft a clarification question, get
+  the DEV's approval, post it to Jira via MCP, and wait for the reply.
+
+Loop-numbering rule (always follow): the stage number is fixed — Rework is always "5".
+If a "## 5 · Rework" section already exists (the gate bounced more than once), append a
+new one tagged "(pass N)", e.g. "## 5 · Rework (pass 2)".
+
+Hard rules:
+- Pull, don't guess — work from the actual gate report via MCP.
+- Move the ticket back to In Progress as you pick the failure up; let Push move it
+  forward again.
+- Fix root causes, not symptoms; check blast radius before declaring green.
+- Never hand Push red, and NEVER edit the acceptance tests / the contract.
+
+The description should say: "Stage 5 of the Dev flow (the cold loop). Pulls the E2E
+gate's failure report from Jira via MCP, turns it into a root-cause fix, self-greens
+the full suite, and hands back to Push — or, if the report is unclear, posts a
+dev-approved clarification and waits. Use when the E2E gate fails a pushed build."
+```
+
+### Step 3: Review the generated skill
+
+Open `.claude/skills/rework/SKILL.md` and check it includes:
+
+- [ ] `name: rework`, a clear description, and the Jira MCP tools (get issue, **add comment**, transition) in `allowed-tools`
+- [ ] The procedure: pull comment → move to In Progress → reproduce → root-cause fix → green full suite → append `## 5 · Rework`
+- [ ] The "report not actionable → dev-approved clarification, then wait" path
+- [ ] The loop-numbering rule (`## 5 · Rework (pass 2)`)
+- [ ] "Never edit the contract" + "fix root causes, not symptoms"
+
+### Step 4: Create the agent
+
+```
+/agents
+```
+
+Choose **Create new agent**, then paste:
+
+```
+Create a subagent called "rework".
+
+Purpose: the cold loop. The independent E2E gate failed a pushed build and posted the
+reason to Jira. Pull that report, turn it into "why + a patch", self-green the full
+suite, and hand back to Push. Fix; do not judge.
+
+It should:
+- Invoke the rework skill.
+- Pull the latest gate comment from the ticket via the Jira MCP.
+- Move the ticket "In Review" → "In Progress" via MCP (matched by status name) as it
+  picks the failure up.
+- Reproduce locally, fix the ROOT CAUSE, then self-green like Build: run the full suite
+  and loop until the whole tree is green. Never hand Push red. Never edit the contract.
+- Append "## 5 · Rework" to <TICKET-KEY>-worklog.md (a new "(pass N)" section if one
+  already exists).
+- If the report isn't actionable: draft a clarification, get DEV approval, post it to
+  Jira, and wait — do not guess, do not push.
+
+Tools it needs: Read, Edit, Write, Grep, Glob, Bash, and the Jira MCP tools (get the
+issue/comments, add a comment, transition the ticket).
+Description: "Stage 5 of the Dev flow (the cold loop). Pulls the gate's failure report
+from Jira, fixes the root cause, self-greens the full suite, and hands back to Push —
+or posts a dev-approved clarification and waits."
+```
+
+### Step 5: Review the generated agent
+
+Open `.claude/agents/rework.md` and check:
+
+- [ ] `name: rework` and a clear `description`
+- [ ] Tools: Read, Edit, Write, Grep, Glob, Bash **and** the Jira MCP tools (incl. add-comment)
+- [ ] It invokes the `rework` skill
+- [ ] It moves the ticket In Review → In Progress as it starts; never edits the contract; never hands Push red
+
+*(You'll run `rework` for real in Part 4, once the gate has something to bounce.)*
 
 ---
 
