@@ -218,7 +218,7 @@ That design *is* Build's input tomorrow.
 
 ```
 Receive & Plan → Design → Build → Push → Rework
-                 (done)
+                 (today)
 ```
 
 ### Key concepts

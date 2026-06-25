@@ -222,7 +222,7 @@ After a green push, your card sits in **In Review** — waiting for the *indepen
 
 ```
 Receive & Plan → Design → Build → Push → Rework
-                                  (done)
+                                  (today)
 ```
 
 ### Key concepts

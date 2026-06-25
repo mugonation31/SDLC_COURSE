@@ -214,7 +214,7 @@ A genuinely green, contract-untouched build is Push's input tomorrow.
 
 ```
 Receive & Plan → Design → Build → Push → Rework
-                          (done)
+                          (today)
 ```
 
 ### Key concepts
