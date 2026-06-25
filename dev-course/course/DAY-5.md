@@ -205,7 +205,7 @@ all the way through Build and Push.
 ### The gate test (already in the repo)
 
 ```js
-// tests/e2e/discount-case.test.js  — SDET gate regression, NOT the dev contract
+// tests/e2e/discount-case.test.js  — E2E gate regression, NOT the dev contract
 const { createCart, addItem } = require('../../src/cart');
 const { applyDiscount, total } = require('../../src/pricing');
 
@@ -230,7 +230,7 @@ describe('discount code is case-insensitive (E2E gate regression)', () => {
 });
 ```
 
-### Step 4.1 — Tutor: fire the gate (play the SDET)
+### Step 4.1 — Tutor: fire the gate (play the gate)
 
 1. **Activate the gate test** — remove `"<rootDir>/tests/e2e/"` from `testPathIgnorePatterns`
    in `package.json` (or check out `day5-broken`, which has it activated).
@@ -255,7 +255,7 @@ describe('discount code is case-insensitive (E2E gate regression)', () => {
 
    Dev: fix the ROOT CAUSE in src/pricing.js (normalise the code before lookup).
    Do NOT edit the acceptance contract or this gate test to make it pass.
-   — SDET / E2E gate
+   — E2E gate
    ```
 4. **Leave the card In Review.** Rework moves it back to In Progress itself.
 

@@ -2,11 +2,12 @@
 
 ## Overview
 
-Today you'll set up your Claude Code environment, connect it to Jira (so the contract comes to you, not the other way round), and build your first skill **and** its agent. By the end of the day, you'll be able to point Claude Code at a ticket key and get back a scoped, codebase-aware task plan — every task traced to an acceptance test, ambiguities flagged before you write a line of code.
+Today you'll set up your Claude Code environment, **connect Claude Code to Jira via MCP** (so the contract comes to you, not the other way round), and build your first skill **and** its agent. By the end of the day, you'll be able to point Claude Code at a ticket key and get back a scoped, codebase-aware task plan — every task traced to an acceptance test, ambiguities flagged before you write a line of code.
 
 **What you'll build:**
 
-- `receive-and-plan` **skill** — pulls a Jira ticket's acceptance criteria + the SDET's tests via MCP and turns them into a scoped, traceable task list
+- **Jira MCP connection** — register Atlassian's MCP server once so Claude Code reads tickets straight from Jira, no copy-paste
+- `receive-and-plan` **skill** — pulls a Jira ticket's acceptance criteria + its acceptance tests (the contract) via MCP and turns them into a scoped, traceable task list
 - `receive-and-plan` **agent** — wields that skill as a hands-off worker: ticket key in → plan out
 
 **Time estimate:** ~2 hours
@@ -42,7 +43,7 @@ Today you'll set up your Claude Code environment, connect it to Jira (so the con
 
 ### Step 3: Connect Jira via MCP
 
-This is how the contract (the PM's AC + the SDET's tests) reaches you without copy-paste — you register Atlassian's MCP server once, then log in through your browser.
+This is how the contract (the acceptance criteria + the acceptance tests) reaches you without copy-paste — you register Atlassian's MCP server once, then log in through your browser.
 
 1. If you're inside a Claude Code session, exit first (`Ctrl+C` twice, or type `exit`). Then, in your terminal, register the Atlassian server:
 
@@ -94,7 +95,7 @@ If Claude returns your project list, you're good to go.
 
 ### What this skill does
 
-Today, picking up a ticket means 30–60 minutes of cold ramp-up: reading the AC, opening the SDET's tests, hunting through unfamiliar code to see what's affected, then breaking it into tasks. This skill collapses that into one move — **ticket key in → scoped, sourced plan out** — with every task traced back to an acceptance test.
+Today, picking up a ticket means 30–60 minutes of cold ramp-up: reading the acceptance criteria, opening the acceptance tests, hunting through unfamiliar code to see what's affected, then breaking it into tasks. This skill collapses that into one move — **ticket key in → scoped, sourced plan out** — with every task traced back to an acceptance test.
 
 This is **step 1 of the dev chain**: Plan → Design → Build → Push → Rework.
 
@@ -114,13 +115,13 @@ Copy and paste the following exactly:
 
 ```
 Create a skill called "receive-and-plan" that pulls a Jira ticket's acceptance
-criteria and the SDET's attached acceptance tests, then turns them into a scoped,
-codebase-aware task list.
+criteria and its attached acceptance tests (the contract), then turns them into a
+scoped, codebase-aware task list.
 
 The skill should:
 - Accept a Jira ticket key (e.g. PROJ-1234). Ask for one if not provided.
 - Use the Jira MCP to fetch the ticket: summary, acceptance criteria, and the
-  SDET's attached/linked acceptance tests (the contract).
+  attached/linked acceptance tests (the contract).
 - Read the acceptance tests as the contract and list every behaviour they assert
   ("when X, then Y").
 - Lightly locate the touch points — search the repo just enough to name the file(s)/module(s)
@@ -132,7 +133,7 @@ The skill should:
   2. Scope — what's in scope and what's explicitly out of scope.
   3. Done-gate — the acceptance criteria restated as the definition of done.
   4. Open questions — any acceptance criterion that is ambiguous or untestable,
-     flagged for the SDET/PM (do not guess).
+     flagged for clarification (do not guess).
 - Save the plan into a worklog file at the repo root named `<TICKET-KEY>-worklog.md`
   (derive the key from the ticket, e.g. PROJ-1234-worklog.md; create the file). Write it
   under a heading `## 1 · Receive & Plan`. This worklog is the handoff every later stage
@@ -143,7 +144,7 @@ Guidelines: Every task must trace to a specific acceptance test — no orphan ta
 Keep tasks small enough to complete and verify individually. If the tests and the
 AC text disagree, treat the tests as the source of truth and flag the mismatch.
 
-The description should say: "Pulls a Jira ticket's acceptance criteria and the SDET's
+The description should say: "Pulls a Jira ticket's acceptance criteria and its
 acceptance tests via MCP and turns them into a scoped, codebase-aware task list. Use at
 the start of every ticket, when planning work, or when breaking a story into tasks."
 ```
@@ -268,7 +269,7 @@ This gives Day 2 real input to design against.
 
 ### What you built
 
-- `receive-and-plan` **skill** — ticket key → AC + SDET tests (via MCP) → scoped, traceable task plan
+- `receive-and-plan` **skill** — ticket key → acceptance criteria + acceptance tests (via MCP) → scoped, traceable task plan
 - `receive-and-plan` **agent** — runs that job hands-off, writes no code, pauses before building
 
 ### The dev chain (you're at step 1)

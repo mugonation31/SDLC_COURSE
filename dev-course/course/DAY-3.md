@@ -2,7 +2,7 @@
 
 ## Overview
 
-Today you write the code — but not the way you might be used to. You'll build the `build` **skill** and its **agent**, which implement the feature **test-first** against the SDET's executable contract: drive the acceptance tests red → green, then make the **whole** suite green locally before handing off. The contract is the definition of done, and you **never edit it** — if the tests seem wrong, that's a question, not an edit.
+Today you write the code — but not the way you might be used to. You'll build the `build` **skill** and its **agent**, which implement the feature **test-first** against the executable contract (the acceptance tests): drive the acceptance tests red → green, then make the **whole** suite green locally before handing off. The contract is the definition of done, and you **never edit it** — if the tests seem wrong, that's a question, not an edit.
 
 **What you'll build:**
 
@@ -11,7 +11,7 @@ Today you write the code — but not the way you might be used to. You'll build 
 
 **Time estimate:** ~2 hours
 
-> **Why test-first here.** The acceptance tests already exist (the SDET wrote them). That's a gift: you're not guessing what "done" means — you're making a precise, executable spec go green. Build *to the test*, not to your assumption of it.
+> **Why test-first here.** The acceptance tests already exist — they're the contract that came with the ticket. That's a gift: you're not guessing what "done" means — you're making a precise, executable spec go green. Build *to the test*, not to your assumption of it.
 
 ---
 
@@ -52,7 +52,7 @@ Copy and paste the following exactly:
 
 ```
 Create a skill called "build" that implements a feature test-first against an
-executable contract (the SDET's acceptance tests), then makes the FULL test suite
+executable contract (the acceptance tests), then makes the FULL test suite
 green locally before handing off to Push.
 
 The skill should:
