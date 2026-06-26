@@ -97,6 +97,12 @@ If Claude returns your project list, you're good to go.
 
 Today, picking up a ticket means 30–60 minutes of cold ramp-up: reading the acceptance criteria, opening the acceptance tests, hunting through unfamiliar code to see what's affected, then breaking it into tasks. This skill collapses that into one move — **ticket key in → scoped, sourced plan out** — with every task traced back to an acceptance test.
 
+> **Where do the tests live?** Wherever your team agrees — the flow doesn't change.
+> - **Startup (small team):** tests sit in *your* repo, next to the code — like a cook tasting their own dish as they go. (This is our setup.)
+> - **Big company:** a separate QA team keeps the tests in *their* repo and runs them against your deployed app — like a restaurant inspector who orders the dish and judges the plate.
+>
+> Either way your job is identical: **make the contract go green, never edit it.** Only the contract's *address* changes.
+
 This is **step 1 of the dev chain**: Plan → Design → Build → Push → Rework.
 
 ### Step 1: Open the skill creator
